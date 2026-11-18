@@ -10,22 +10,22 @@ export default function InventoryLogs() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const response = await fetchWithAuth(`${API_URL}/api/audit-logs`);
+        if (response && response.ok) {
+          const data = await response.json();
+          setLogs(Array.isArray(data) ? data : []);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+        setLoading(false);
+      }
+    };
+
     fetchLogs();
   }, []);
-
-  const fetchLogs = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/api/audit-logs`);
-      if (response && response.ok) {
-        const data = await response.json();
-        setLogs(Array.isArray(data) ? data : []);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-      setLoading(false);
-    }
-  };
 
   const safeLogs = Array.isArray(logs) ? logs : [];
 
@@ -117,7 +117,7 @@ export default function InventoryLogs() {
                 </tr>
               ) : (
                 filteredLogs.map((log) => (
-                  <tr key={log._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
+                  <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                     <td className="px-8 py-6 whitespace-nowrap">
                       <span className="text-[11px] font-black text-slate-400 uppercase">{new Date(log.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
                     </td>

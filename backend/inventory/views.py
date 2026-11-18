@@ -1,8 +1,54 @@
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import viewsets, status, response
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Category, Product, Order, InventoryLog
 from .serializers import CategorySerializer, ProductSerializer, OrderSerializer, InventoryLogSerializer
+
+User = get_user_model()
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    identifier = (request.data.get('email') or request.data.get('username') or '').strip()
+    password = request.data.get('password') or ''
+
+    if not identifier or not password:
+        return response.Response(
+            {'message': 'Email/username and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    username = identifier
+    if '@' in identifier:
+        matched_user = User.objects.filter(email__iexact=identifier).first()
+        if matched_user:
+            username = matched_user.username
+
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return response.Response(
+            {'message': 'Invalid email or password.'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+    return response.Response({
+        'token': access_token,
+        'access': access_token,
+        'refresh': str(refresh),
+        'data': {
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'name': user.get_full_name() or user.username,
+            }
+        },
+    })
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

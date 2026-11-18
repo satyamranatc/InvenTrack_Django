@@ -55,7 +55,6 @@ const detectAnomalies = (data) => {
 };
 
 export default function Dashboard({ orders = [], products = [], isDarkMode }) {
-  if (!orders || !products) return null;
   const [timeWindow, setTimeWindow] = useState("30D");
 
   const chartTheme = {
@@ -69,7 +68,7 @@ export default function Dashboard({ orders = [], products = [], isDarkMode }) {
     const dailyMap = {};
     orders.forEach(order => {
       const date = new Date(order.orderDate).toISOString().split('T')[0];
-      const product = products.find(p => p.name === order.productName) || { price: 0, costPrice: 0 };
+      const product = products.find(p => p.id === order.product || p.name === order.product_name) || { price: 0, costPrice: 0 };
       
       const price = product.price || 0;
       const cost = product.costPrice || 0;
@@ -97,11 +96,12 @@ export default function Dashboard({ orders = [], products = [], isDarkMode }) {
     const revenueForecast = forecastNextPeriod(timeSeries);
 
     const categoryStats = products.reduce((acc, curr) => {
-      if (!acc[curr.category]) acc[curr.category] = { name: curr.category, stock: 0, items: 0, value: 0, profitPotential: 0 };
-      acc[curr.category].stock += curr.stock;
-      acc[curr.category].items += 1;
-      acc[curr.category].value += curr.price * curr.stock;
-      acc[curr.category].profitPotential += (curr.price - curr.costPrice) * curr.stock;
+      const catName = curr.category_name || 'Uncategorized';
+      if (!acc[catName]) acc[catName] = { name: catName, stock: 0, items: 0, value: 0, profitPotential: 0 };
+      acc[catName].stock += curr.stock;
+      acc[catName].items += 1;
+      acc[catName].value += curr.price * curr.stock;
+      acc[catName].profitPotential += (curr.price - curr.costPrice) * curr.stock;
       return acc;
     }, {});
 
@@ -114,7 +114,8 @@ export default function Dashboard({ orders = [], products = [], isDarkMode }) {
     const statusData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
     const productSales = orders.reduce((acc, order) => {
-      acc[order.productName] = (acc[order.productName] || 0) + order.quantity;
+      const prodName = order.product_name || 'Unknown';
+      acc[prodName] = (acc[prodName] || 0) + order.quantity;
       return acc;
     }, {});
 
@@ -125,7 +126,7 @@ export default function Dashboard({ orders = [], products = [], isDarkMode }) {
 
     const customerInsights = orders.reduce((acc, order) => {
       if (!acc[order.customerName]) acc[order.customerName] = { name: order.customerName, totalSpent: 0, orders: 0 };
-      const product = products.find(p => p.name === order.productName);
+      const product = products.find(p => p.id === order.product || p.name === order.product_name);
       acc[order.customerName].totalSpent += (product?.price || 0) * order.quantity;
       acc[order.customerName].orders += 1;
       return acc;

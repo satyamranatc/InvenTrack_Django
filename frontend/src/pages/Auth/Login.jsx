@@ -99,6 +99,23 @@ export default function Login() {
               )}
             </button>
           </form>
+
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+            <div className="text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
+              <p className="font-black uppercase tracking-widest text-[10px] text-slate-400">Demo Credentials</p>
+              <p className="font-mono font-bold text-slate-700 dark:text-slate-200">admin@inventrack.com / admin123</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@inventrack.com');
+                setPassword('admin123');
+              }}
+              className="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-xl transition-colors shrink-0"
+            >
+              Fill
+            </button>
+          </div>
         </div>
 
         <div className="text-center">

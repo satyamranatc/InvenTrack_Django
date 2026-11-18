@@ -21,7 +21,7 @@ export default function Product({ products, setProducts, categories }) {
     formData.append('stock', e.target[5].value);
     formData.append('minStockThreshold', e.target[6].value);
     formData.append('batchNumber', e.target[7].value);
-    formData.append('expiryDate', e.target[8].value);
+    if (e.target[8].value) formData.append('expiryDate', e.target[8].value);
     formData.append('location', e.target[9].value);
     formData.append('unit', 'Pieces');
     if (selectedFile) formData.append('image', selectedFile);
@@ -53,7 +53,7 @@ export default function Product({ products, setProducts, categories }) {
     formData.append('stock', e.target[4].value);
     formData.append('minStockThreshold', e.target[5].value);
     formData.append('batchNumber', e.target[6].value);
-    formData.append('expiryDate', e.target[7].value);
+    if (e.target[7].value) formData.append('expiryDate', e.target[7].value);
     formData.append('location', e.target[8].value);
     if (editFile) formData.append('image', editFile);
 
@@ -65,7 +65,7 @@ export default function Product({ products, setProducts, categories }) {
 
       if (response.ok) {
         const updatedProduct = await response.json();
-        setProducts(products.map(p => p._id === id ? updatedProduct : p));
+        setProducts(products.map(p => p.id === id ? updatedProduct : p));
         setEditFile(null);
       }
     } catch (error) {
@@ -79,7 +79,7 @@ export default function Product({ products, setProducts, categories }) {
         method: 'DELETE',
       });
       if (response.ok) {
-        setProducts(products.filter(p => p._id !== id));
+        setProducts(products.filter(p => p.id !== id));
       }
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -88,7 +88,7 @@ export default function Product({ products, setProducts, categories }) {
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
+    (p.category_name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -157,7 +157,7 @@ export default function Product({ products, setProducts, categories }) {
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Category</label>
                       <select className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none cursor-pointer">
-                        {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
+                        {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                       </select>
                     </div>
                     <div className="space-y-2">
@@ -228,12 +228,12 @@ export default function Product({ products, setProducts, categories }) {
                   const isLoss = profit < 0;
 
                   return (
-                    <tr key={product._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
+                    <tr key={product.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-slate-700 flex-shrink-0 relative">
                             {product.image ? (
-                              <img src={`${API_URL}${product.image}`} alt={product.name} className="w-full h-full object-cover" />
+                              <img src={product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`} alt={product.name} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-slate-300">
                                 <ImageIcon className="w-5 h-5" />
@@ -242,7 +242,7 @@ export default function Product({ products, setProducts, categories }) {
                           </div>
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-slate-800 dark:text-white leading-tight">{product.name}</span>
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">{product.category}</span>
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">{product.category_name}</span>
                           </div>
                         </div>
                       </td>
@@ -292,7 +292,7 @@ export default function Product({ products, setProducts, categories }) {
                             {close => (
                               <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
                                 <h3 className="text-xl font-bold text-slate-800 dark:text-white">Edit Specifications</h3>
-                                <form onSubmit={(e) => { handleUpdate(product._id, e); close(); }} className="space-y-6">
+                                <form onSubmit={(e) => { handleUpdate(product.id, e); close(); }} className="space-y-6">
                                   <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                       <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Title</label>
@@ -311,7 +311,7 @@ export default function Product({ products, setProducts, categories }) {
                                     <div className="space-y-2">
                                       <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Category</label>
                                       <select defaultValue={product.category} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none">
-                                        {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
+                                        {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                                       </select>
                                     </div>
                                   </div>
@@ -344,7 +344,7 @@ export default function Product({ products, setProducts, categories }) {
                               </div>
                             )}
                           </Popup>
-                          <button onClick={() => handleDelete(product._id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+                          <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
                             <Trash2 className="w-5 h-5" />
                           </button>
                         </div>

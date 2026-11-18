@@ -39,7 +39,7 @@ export default function Category({categories, setCategories}) {
       });
       if (response.ok) {
         const updatedCategory = await response.json();
-        setCategories(categories.map(cat => cat._id === id ? updatedCategory : cat));
+        setCategories(categories.map(cat => cat.id === id ? updatedCategory : cat));
       }
     } catch (error) {
       console.error("Error updating category:", error);
@@ -52,7 +52,7 @@ export default function Category({categories, setCategories}) {
         method: 'DELETE'
       });
       if (response.ok) {
-        setCategories(categories.filter(cat => cat._id !== id));
+        setCategories(categories.filter(cat => cat.id !== id));
       }
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -122,7 +122,7 @@ export default function Category({categories, setCategories}) {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {categories.map((category, index) => (
-                  <tr key={category._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
+                  <tr key={category.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                     <td className="px-8 py-5">
                       <span className="text-xs font-bold text-slate-400">#{index + 1}</span>
                     </td>
@@ -144,7 +144,7 @@ export default function Category({categories, setCategories}) {
                           {close => (
                             <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8">
                               <h3 className="text-xl font-bold text-slate-900 dark:text-white">Edit Category</h3>
-                              <form onSubmit={(e) => { handleUpdate(category._id, e); close(); }} className="space-y-6">
+                              <form onSubmit={(e) => { handleUpdate(category.id, e); close(); }} className="space-y-6">
                                 <div className="space-y-2">
                                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Category Name</label>
                                   <input type="text" defaultValue={category.name} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
@@ -154,7 +154,7 @@ export default function Category({categories, setCategories}) {
                             </div>
                           )}
                         </Popup>
-                        <button onClick={() => handleDelete(category._id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+                        <button onClick={() => handleDelete(category.id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>

@@ -6,6 +6,204 @@ import { fetchWithAuth } from "../../utils/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+function NewOrderModal({ products, onSubmit, close }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showResults, setShowResults] = useState(false);
+
+  const filteredProductsList = products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ).slice(0, 5);
+
+  return (
+    <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white">New Transaction</h3>
+        <button onClick={close} className="p-2 text-slate-400 hover:text-slate-600 transition-colors"><X className="w-6 h-6" /></button>
+      </div>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        if (!selectedProduct) return;
+        const data = {
+          customerName: e.target[0].value,
+          product: selectedProduct.id,
+          quantity: parseInt(e.target[2].value, 10),
+          orderDate: e.target[3].value,
+          status: e.target[4].value || 'Pending',
+        };
+        onSubmit(data);
+        close();
+      }} className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Customer Name</label>
+          <input type="text" placeholder="Full name" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
+        </div>
+
+        <div className="space-y-2 relative">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Search Product</label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder={selectedProduct?.name || "Type to search..."}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowResults(true);
+              }}
+              onFocus={() => setShowResults(true)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10"
+              required={!selectedProduct}
+            />
+          </div>
+          {showResults && searchQuery && (
+            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+              {filteredProductsList.length > 0 ? (
+                filteredProductsList.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedProduct({ id: p.id, name: p.name });
+                      setSearchQuery("");
+                      setShowResults(false);
+                    }}
+                    className="w-full px-5 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-none flex items-center justify-between"
+                  >
+                    <span>{p.name}</span>
+                    <span className="text-[10px] font-extrabold text-slate-400">${p.price}</span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-5 py-4 text-xs text-slate-400 font-bold uppercase text-center">No matches found</div>
+              )}
+            </div>
+          )}
+          {selectedProduct && !searchQuery && (
+            <div className="flex items-center gap-3 mt-3 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl w-fit border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">Selected: {selectedProduct.name}</span>
+              <button type="button" onClick={() => setSelectedProduct(null)} className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-full transition-colors">
+                <X className="w-4 h-4 text-indigo-600" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Quantity</label>
+            <input type="number" placeholder="0" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Order Date</label>
+            <input type="date" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status</label>
+          <select className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500/10">
+            <option value="Pending">Pending</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Returned">Returned</option>
+          </select>
+        </div>
+
+        <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">Create Order</button>
+      </form>
+    </div>
+  );
+}
+
+function EditOrderModal({ order, products, onUpdate, close }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState({ id: order.product, name: order.product_name });
+  const [showResults, setShowResults] = useState(false);
+
+  const filteredProductsList = products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  ).slice(0, 5);
+
+  return (
+    <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8">
+      <h3 className="text-xl font-bold text-slate-900 dark:text-white">Update Record</h3>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        const data = {
+          customerName: e.target[0].value,
+          product: selectedProduct.id,
+          quantity: parseInt(e.target[2].value, 10),
+          status: e.target[3].value,
+        };
+        onUpdate(order.id, data);
+        close();
+      }} className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Customer Name</label>
+          <input type="text" defaultValue={order.customerName} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" />
+        </div>
+
+        <div className="space-y-2 relative">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Product Search</label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder={selectedProduct?.name}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowResults(true);
+              }}
+              onFocus={() => setShowResults(true)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10"
+            />
+          </div>
+          {showResults && searchQuery && (
+            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+              {filteredProductsList.map(p => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedProduct({ id: p.id, name: p.name });
+                    setSearchQuery("");
+                    setShowResults(false);
+                  }}
+                  className="w-full px-5 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-none"
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+          {selectedProduct && !searchQuery && (
+            <div className="mt-2 text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Current: {selectedProduct.name}</div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Qty</label>
+            <input type="number" defaultValue={order.quantity} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status</label>
+            <select defaultValue={order.status} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500/10">
+              <option value="Pending">Pending</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Returned">Returned</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">Save Changes</button>
+      </form>
+    </div>
+  );
+}
+
 export default function Order({ orders, setOrders, products = [] }) {
   const [activeTab, setActiveTab] = useState('Current');
 
@@ -36,7 +234,7 @@ export default function Order({ orders, setOrders, products = [] }) {
 
       if (response.ok) {
         const updatedOrder = await response.json();
-        setOrders(orders.map((order) => order._id === id ? updatedOrder : order));
+        setOrders(orders.map((order) => order.id === id ? updatedOrder : order));
       }
     } catch (error) {
       console.error("Error updating order:", error);
@@ -49,7 +247,7 @@ export default function Order({ orders, setOrders, products = [] }) {
         method: 'DELETE'
       });
       if (response.ok) {
-        setOrders(orders.filter((order) => order._id !== id));
+        setOrders(orders.filter((order) => order.id !== id));
       }
     } catch (error) {
       console.error("Error deleting order:", error);
@@ -87,112 +285,7 @@ export default function Order({ orders, setOrders, products = [] }) {
           overlayStyle={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }}
           contentStyle={{ width: '450px', padding: '0', borderRadius: '1.5rem', border: 'none' }}
         >
-          {close => {
-            const [searchQuery, setSearchQuery] = useState("");
-            const [selectedProduct, setSelectedProduct] = useState(null);
-            const [showResults, setShowResults] = useState(false);
-
-            const filteredProductsList = products.filter(p => 
-              p.name.toLowerCase().includes(searchQuery.toLowerCase())
-            ).slice(0, 5);
-
-            return (
-              <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">New Transaction</h3>
-                  <button onClick={close} className="p-2 text-slate-400 hover:text-slate-600 transition-colors"><X className="w-6 h-6" /></button>
-                </div>
-                <form onSubmit={(e) => { 
-                  e.preventDefault();
-                  const data = {
-                    customerName: e.target[0].value,
-                    productName: selectedProduct,
-                    quantity: e.target[2].value,
-                    orderDate: e.target[3].value,
-                    status: e.target[4].value || 'Pending',
-                  };
-                  handleSubmitManual(data);
-                  close(); 
-                }} className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Customer Name</label>
-                    <input type="text" placeholder="Full name" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
-                  </div>
-                  
-                  <div className="space-y-2 relative">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Search Product</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input 
-                        type="text" 
-                        placeholder={selectedProduct || "Type to search..."}
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          setShowResults(true);
-                        }}
-                        onFocus={() => setShowResults(true)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" 
-                        required={!selectedProduct}
-                      />
-                    </div>
-                    {showResults && searchQuery && (
-                      <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
-                        {filteredProductsList.length > 0 ? (
-                          filteredProductsList.map(p => (
-                            <button
-                              key={p._id}
-                              type="button"
-                              onClick={() => {
-                                setSelectedProduct(p.name);
-                                setSearchQuery("");
-                                setShowResults(false);
-                              }}
-                              className="w-full px-5 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-none flex items-center justify-between"
-                            >
-                              <span>{p.name}</span>
-                              <span className="text-[10px] font-extrabold text-slate-400">${p.price}</span>
-                            </button>
-                          ))
-                        ) : (
-                          <div className="px-5 py-4 text-xs text-slate-400 font-bold uppercase text-center">No matches found</div>
-                        )}
-                      </div>
-                    )}
-                    {selectedProduct && !searchQuery && (
-                      <div className="flex items-center gap-3 mt-3 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl w-fit border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
-                        <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">Selected: {selectedProduct}</span>
-                        <button type="button" onClick={() => setSelectedProduct(null)} className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-full transition-colors">
-                          <X className="w-4 h-4 text-indigo-600" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Quantity</label>
-                      <input type="number" placeholder="0" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Order Date</label>
-                      <input type="date" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" required />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Fulfillment Status</label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500/10">
-                      <option value="Pending">Pending</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Returned">Returned</option>
-                    </select>
-                  </div>
-                  <button type="submit" disabled={!selectedProduct} className="w-full py-3.5 bg-indigo-600 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">Create Order Record</button>
-                </form>
-              </div>
-            );
-          }}
+          {close => <NewOrderModal products={products} onSubmit={handleSubmitManual} close={close} />}
         </Popup>
       </div>
 
@@ -239,7 +332,7 @@ export default function Order({ orders, setOrders, products = [] }) {
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
+                  <tr key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group">
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-extrabold text-xs shadow-inner">
@@ -249,7 +342,7 @@ export default function Order({ orders, setOrders, products = [] }) {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{order.productName}</span>
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{order.product_name}</span>
                     </td>
                     <td className="px-8 py-5 text-center font-extrabold text-slate-700 dark:text-slate-200">
                       {order.quantity}
@@ -276,95 +369,9 @@ export default function Order({ orders, setOrders, products = [] }) {
                           overlayStyle={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }}
                           contentStyle={{ width: '450px', padding: '0', borderRadius: '1.5rem', border: 'none' }}
                         >
-                          {close => {
-                            const [searchQuery, setSearchQuery] = useState("");
-                            const [selectedProduct, setSelectedProduct] = useState(order.productName);
-                            const [showResults, setShowResults] = useState(false);
-
-                            const filteredProductsList = products.filter(p => 
-                              p.name.toLowerCase().includes(searchQuery.toLowerCase())
-                            ).slice(0, 5);
-
-                            return (
-                              <div className="p-10 bg-white dark:bg-black rounded-3xl shadow-2xl space-y-8">
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Update Record</h3>
-                                <form onSubmit={(e) => { 
-                                  e.preventDefault();
-                                  const data = {
-                                    customerName: e.target[0].value,
-                                    productName: selectedProduct,
-                                    quantity: e.target[2].value,
-                                    status: e.target[3].value,
-                                  };
-                                  handleUpdateManual(order._id, data);
-                                  close();
-                                }} className="space-y-6">
-                                  <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Customer Name</label>
-                                    <input type="text" defaultValue={order.customerName} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" />
-                                  </div>
-
-                                  <div className="space-y-2 relative">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Product Search</label>
-                                    <div className="relative">
-                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                      <input 
-                                        type="text" 
-                                        placeholder={selectedProduct}
-                                        value={searchQuery}
-                                        onChange={(e) => {
-                                          setSearchQuery(e.target.value);
-                                          setShowResults(true);
-                                        }}
-                                        onFocus={() => setShowResults(true)}
-                                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" 
-                                      />
-                                    </div>
-                                    {showResults && searchQuery && (
-                                      <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-                                        {filteredProductsList.map(p => (
-                                          <button
-                                            key={p._id}
-                                            type="button"
-                                            onClick={() => {
-                                              setSelectedProduct(p.name);
-                                              setSearchQuery("");
-                                              setShowResults(false);
-                                            }}
-                                            className="w-full px-5 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-none"
-                                          >
-                                            {p.name}
-                                          </button>
-                                        ))}
-                                      </div>
-                                    )}
-                                    {selectedProduct && !searchQuery && (
-                                      <div className="mt-2 text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Current: {selectedProduct}</div>
-                                    )}
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Qty</label>
-                                      <input type="number" defaultValue={order.quantity} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white focus:ring-2 focus:ring-indigo-500/10" />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status</label>
-                                      <select defaultValue={order.status} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm font-medium dark:text-white appearance-none cursor-pointer focus:ring-2 focus:ring-indigo-500/10">
-                                        <option value="Pending">Pending</option>
-                                        <option value="Shipped">Shipped</option>
-                                        <option value="Delivered">Delivered</option>
-                                        <option value="Returned">Returned</option>
-                                      </select>
-                                    </div>
-                                  </div>
-                                  <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">Save Changes</button>
-                                </form>
-                              </div>
-                            );
-                          }}
+                          {close => <EditOrderModal order={order} products={products} onUpdate={handleUpdateManual} close={close} />}
                         </Popup>
-                        <button onClick={() => handleDelete(order._id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+                        <button onClick={() => handleDelete(order.id)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
