@@ -1,0 +1,52 @@
+erDiagram
+    CATEGORY ||--o{ PRODUCT : "classifies"
+    PRODUCT ||--o{ ORDER : "ordered_in"
+    PRODUCT ||--o{ INVENTORY_LOG : "tracked_by"
+
+    USER {
+        int id PK
+        string username
+        string email
+        string password
+        boolean is_staff
+    }
+
+    CATEGORY {
+        int id PK
+        string name UK
+    }
+
+    PRODUCT {
+        int id PK
+        string name
+        decimal price
+        decimal costPrice
+        int category_id FK
+        int stock
+        int minStockThreshold
+        string batchNumber
+        date expiryDate
+        string location
+        string image
+        string unit
+    }
+
+    ORDER {
+        int id PK
+        string customerName
+        int product_id FK
+        int quantity
+        date orderDate
+        string status
+    }
+
+    INVENTORY_LOG {
+        int id PK
+        datetime timestamp
+        int product_id FK
+        string productName
+        string type
+        int quantityChange
+        int newStock
+        string reason
+    }

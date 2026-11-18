@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor Admin
+    participant UI as Orders.jsx (React)
+    participant API as OrderViewSet (DRF)
+    participant DB as SQLite / PostgreSQL
+
+    Admin->>UI: Fill New Order Form & Submit
+    UI->>API: POST /api/orders (Bearer JWT, product ID, qty)
+    API->>DB: Save Order record
+    API->>DB: Deduct Product.stock -= quantity
+    API->>DB: Create InventoryLog (type='Outbound', delta=-qty)
+    DB-->>API: Saved Order + Updated Stock
+    API-->>UI: 201 Created (Order JSON with product_name)
+    UI-->>Admin: Update Orders Table & Dashboard State

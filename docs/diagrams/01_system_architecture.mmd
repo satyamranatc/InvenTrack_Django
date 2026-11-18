@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph Client["Frontend (React + Vite)"]
+        UI["Admin Console & Home UI\n(Tailwind CSS, Recharts, Three.js)"]
+        AuthClient["fetchWithAuth + JWT Storage\n(localStorage)"]
+    end
+
+    subgraph Backend["Backend (Django 4.2 + DRF)"]
+        API["DRF ViewSets & Router\n(/api/categories, /api/products,\n/api/orders, /api/audit-logs)"]
+        JWT["SimpleJWT Auth\n(/api/auth/login, /api/auth/token/refresh)"]
+        Logic["Business Intelligence Layer\n(Stock Deduction & Audit Triggers)"]
+    end
+
+    subgraph Storage["Data & Media Layer"]
+        DB[("SQLite / PostgreSQL\n(Category, Product, Order, InventoryLog, User)")]
+        Media["Local Media Storage\n(/media/products/)"]
+    end
+
+    UI --> AuthClient
+    AuthClient -- "HTTP / JSON + Bearer JWT" --> JWT
+    AuthClient -- "REST API Calls" --> API
+    JWT --> DB
+    API --> Logic
+    Logic --> DB
+    API --> Media

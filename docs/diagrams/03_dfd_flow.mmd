@@ -1,0 +1,32 @@
+flowchart TD
+    Admin(["Administrator"])
+
+    subgraph Core["InvenTrack System"]
+        P1["1.0 Authentication\n(JWT Login)"]
+        P2["2.0 Category & Product\nManagement"]
+        P3["3.0 Order Processing &\nStock Deduction"]
+        P4["4.0 Audit Ledger &\nAnalytics Engine"]
+    end
+
+    D1[("Users Table")]
+    D2[("Categories & Products")]
+    D3[("Orders Table")]
+    D4[("InventoryLog Ledger")]
+
+    Admin -- "Email & Password" --> P1
+    P1 -- "Verify" --> D1
+    P1 -- "JWT Token" --> Admin
+
+    Admin -- "CRUD Categories / Products" --> P2
+    P2 -- "Store SKU & Stock" --> D2
+    P2 -- "Initial / Manual Log" --> D4
+
+    Admin -- "Create / Update Order" --> P3
+    P3 -- "Save Order" --> D3
+    P3 -- "Deduct Stock" --> D2
+    P3 -- "Outbound Log" --> D4
+
+    D2 --> P4
+    D3 --> P4
+    D4 --> P4
+    P4 -- "KPIs, Charts, Audit Trail" --> Admin

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>InvenTrack - Project Synopsis</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 18mm 18mm 18mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      color: #0f172a;
+      line-height: 1.55;
+      font-size: 10.5pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .cover {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 42px 36px;
+      page-break-after: always;
+    }
+    .badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 700;
+      font-size: 9pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    h1.title {
+      font-size: 28pt;
+      line-height: 1.15;
+      margin: 0 0 12px 0;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .subtitle {
+      font-size: 13pt;
+      color: #475569;
+      margin: 0 0 28px 0;
+      font-weight: 500;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+    .meta-item label {
+      display: block;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 3px;
+    }
+    .meta-item span {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #1e1b4b;
+      border-bottom: 2px solid #e0e7ff;
+      padding-bottom: 5px;
+      margin: 22px 0 10px 0;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11.5pt;
+      color: #334155;
+      margin: 14px 0 6px 0;
+      page-break-after: avoid;
+    }
+    p { margin: 0 0 10px 0; text-align: justify; }
+    ul { margin: 4px 0 12px 20px; padding: 0; }
+    li { margin-bottom: 5px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .diagram-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 12px 0 18px 0;
+      background: #ffffff;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .diagram-caption {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+    }
+    .page-break { page-break-before: always; }
+    code {
+      background: #f1f5f9;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9pt;
+    }
+  </style>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+  </script>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div>
+      <div class="badge">College Project Synopsis</div>
+      <h1 class="title">InvenTrack: Enterprise Inventory Intelligence System</h1>
+      <p class="subtitle">A Full-Stack Inventory Management, Automated Stock Auditing, and Business Analytics Platform built with Django REST Framework and React.js</p>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <label>Submitted By</label>
+        <span>Satyam Rana</span>
+      </div>
+      <div class="meta-item">
+        <label>Technology Stack</label>
+        <span>Django 4.2, DRF, React 19, Vite, Tailwind CSS</span>
+      </div>
+      <div class="meta-item">
+        <label>Database & Auth</label>
+        <span>SQLite / PostgreSQL, SimpleJWT (Bearer Auth)</span>
+      </div>
+      <div class="meta-item">
+        <label>Submission Date</label>
+        <span>November 2026</span>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 9.5pt; color: #64748b;">
+      <strong>Project Repository:</strong> InvenTrack_Django &nbsp;|&nbsp; <strong>Architecture:</strong> Decoupled REST API + SPA Frontend
+    </div>
+  </div>
+
+  <!-- 1. INTRODUCTION & ABSTRACT -->
+  <h2>1. Introduction &amp; Abstract</h2>
+  <p>
+    <strong>InvenTrack</strong> is a full-stack Enterprise Inventory Management and Business Intelligence web application designed to eliminate manual stock tracking errors, automate order-to-stock synchronization, and provide real-time financial and operational visibility. Built using <strong>Django 4.2</strong> and <strong>Django REST Framework (DRF)</strong> on the backend and <strong>React.js (Vite)</strong> with <strong>Tailwind CSS</strong> and <strong>Recharts</strong> on the frontend, the platform unifies product catalog management, category taxonomy, order fulfillment, and an immutable movement audit ledger in one cohesive interface.
+  </p>
+  <p>
+    Unlike basic CRUD inventory trackers, InvenTrack automatically records every stock change—whether from initial product creation (<code>Inbound</code>), order placement (<code>Outbound</code>), or manual stock correction (<code>Adjustment</code>)—into a tamper-evident <code>InventoryLog</code> ledger. It also monitors batch numbers, expiry dates, warehouse locations, profit margins, and per-SKU low-stock thresholds.
+  </p>
+
+  <!-- 2. PROBLEM STATEMENT & OBJECTIVES -->
+  <h2>2. Problem Statement &amp; Objectives</h2>
+  <h3>Problem Statement</h3>
+  <p>
+    Small and medium-sized warehouses and retail operations frequently rely on spreadsheets or disconnected tools to track stock levels, orders, and supplier batches. This leads to overselling, unrecorded stock shrinkage, missed product expirations, and delayed visibility into profit margins and demand trends.
+  </p>
+  <h3>Key Objectives</h3>
+  <ul>
+    <li>Provide a secure, JWT-authenticated administrative console for managing categories, products, and customer orders.</li>
+    <li>Automate real-time inventory deduction when orders are created and log every stock delta in an audit trail.</li>
+    <li>Track batch numbers, expiry dates, warehouse shelf locations, cost vs. selling price, and low-stock thresholds.</li>
+    <li>Deliver interactive analytics dashboards including revenue/profit time series, category breakdowns, anomaly detection, and demand forecasting.</li>
+  </ul>
+
+  <!-- 3. TECHNOLOGY STACK -->
+  <h2>3. Technology Stack &amp; System Requirements</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Technology / Tool</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Frontend UI</td>
+        <td>React 19, Vite 8, Tailwind CSS 4, Lucide Icons</td>
+        <td>Responsive SPA with OLED dark mode and light mode</td>
+      </tr>
+      <tr>
+        <td>Data Visualization</td>
+        <td>Recharts, Framer Motion, Three.js / React Three Fiber</td>
+        <td>Interactive analytics charts and 3D visual elements</td>
+      </tr>
+      <tr>
+        <td>Backend Framework</td>
+        <td>Python 3.15, Django 4.2.30, Django REST Framework 3.16</td>
+        <td>RESTful APIs, serialization, and business logic</td>
+      </tr>
+      <tr>
+        <td>Authentication</td>
+        <td>djangorestframework-simplejwt 5.5.1</td>
+        <td>Stateless JWT token generation and refresh</td>
+      </tr>
+      <tr>
+        <td>Database &amp; Media</td>
+        <td>SQLite (dev) / PostgreSQL (prod), Pillow 11.3</td>
+        <td>Relational persistence and product image uploads</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- 4. SYSTEM ARCHITECTURE -->
+  <h2>4. System Architecture</h2>
+  <p>
+    InvenTrack follows a decoupled client-server architecture. The React frontend communicates with the Django REST API over HTTP using JSON and <code>multipart/form-data</code> (for product images), authenticating requests via <code>Bearer</code> JWT tokens.
+  </p>
+  <div class="diagram-box">
+    <div class="mermaid">
+flowchart LR
+    subgraph Client["Frontend (React + Vite)"]
+        UI["Admin Console & Home UI\n(Tailwind CSS, Recharts, Three.js)"]
+        AuthClient["fetchWithAuth + JWT Storage\n(localStorage)"]
+    end
+    subgraph Backend["Backend (Django 4.2 + DRF)"]
+        API["DRF ViewSets & Router\n(/api/categories, /api/products,\n/api/orders, /api/audit-logs)"]
+        JWT["SimpleJWT Auth\n(/api/auth/login, /api/auth/token/refresh)"]
+        Logic["Business Intelligence Layer\n(Stock Deduction & Audit Triggers)"]
+    end
+    subgraph Storage["Data & Media Layer"]
+        DB[("SQLite / PostgreSQL\n(Category, Product, Order, InventoryLog, User)")]
+        Media["Local Media Storage\n(/media/products/)"]
+    end
+    UI --> AuthClient
+    AuthClient -- "HTTP / JSON + Bearer JWT" --> JWT
+    AuthClient -- "REST API Calls" --> API
+    JWT --> DB
+    API --> Logic
+    Logic --> DB
+    API --> Media
+    </div>
+    <div class="diagram-caption">Figure 1: InvenTrack System Architecture</div>
+  </div>
+
+  <!-- 5. DATABASE DESIGN & ER DIAGRAM -->
+  <h2>5. Database Design &amp; ER Diagram</h2>
+  <p>
+    The relational schema consists of four core domain models in <code>inventory/models.py</code> (<code>Category</code>, <code>Product</code>, <code>Order</code>, <code>InventoryLog</code>) alongside Django's built-in <code>User</code> model for authentication.
+  </p>
+  <div class="diagram-box">
+    <div class="mermaid">
+erDiagram
+    CATEGORY ||--o{ PRODUCT : "classifies"
+    PRODUCT ||--o{ ORDER : "ordered_in"
+    PRODUCT ||--o{ INVENTORY_LOG : "tracked_by"
+
+    USER {
+        int id PK
+        string username
+        string email
+        string password
+    }
+    CATEGORY {
+        int id PK
+        string name UK
+    }
+    PRODUCT {
+        int id PK
+        string name
+        decimal price
+        decimal costPrice
+        int category_id FK
+        int stock
+        int minStockThreshold
+        string batchNumber
+        date expiryDate
+        string location
+    }
+    ORDER {
+        int id PK
+        string customerName
+        int product_id FK
+        int quantity
+        date orderDate
+        string status
+    }
+    INVENTORY_LOG {
+        int id PK
+        datetime timestamp
+        int product_id FK
+        string productName
+        string type
+        int quantityChange
+        int newStock
+        string reason
+    }
+    </div>
+    <div class="diagram-caption">Figure 2: Entity-Relationship (ER) Diagram</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 6. DATA FLOW & SEQUENCE -->
+  <h2>6. Data Flow &amp; Process Workflows</h2>
+  <div class="diagram-box">
+    <div class="mermaid">
+flowchart TD
+    Admin(["Administrator"])
+    subgraph Core["InvenTrack System"]
+        P1["1.0 Authentication (JWT Login)"]
+        P2["2.0 Category & Product Management"]
+        P3["3.0 Order Processing & Stock Deduction"]
+        P4["4.0 Audit Ledger & Analytics Engine"]
+    end
+    D1[("Users")]
+    D2[("Categories & Products")]
+    D3[("Orders")]
+    D4[("InventoryLog")]
+    Admin -- "Credentials" --> P1 --> D1
+    Admin -- "CRUD" --> P2 --> D2
+    P2 -- "Inbound / Adjustment" --> D4
+    Admin -- "Order" --> P3 --> D3
+    P3 -- "Deduct Stock" --> D2
+    P3 -- "Outbound Log" --> D4
+    D2 --> P4
+    D3 --> P4
+    D4 --> P4
+    P4 -- "KPIs & Charts" --> Admin
+    </div>
+    <div class="diagram-caption">Figure 3: Data Flow Diagram (DFD)</div>
+  </div>
+
+  <div class="diagram-box">
+    <div class="mermaid">
+sequenceDiagram
+    actor Admin
+    participant UI as Orders.jsx (React)
+    participant API as OrderViewSet (DRF)
+    participant DB as SQLite / PostgreSQL
+
+    Admin->>UI: Fill New Order Form & Submit
+    UI->>API: POST /api/orders (Bearer JWT, product ID, qty)
+    API->>DB: Save Order record
+    API->>DB: Deduct Product.stock -= quantity
+    API->>DB: Create InventoryLog (type='Outbound', delta=-qty)
+    DB-->>API: Saved Order + Updated Stock
+    API-->>UI: 201 Created (Order JSON with product_name)
+    UI-->>Admin: Update Orders Table & Dashboard State
+    </div>
+    <div class="diagram-caption">Figure 4: Order Creation &amp; Automated Stock Deduction Sequence</div>
+  </div>
+
+  <!-- 7. MODULES & API ENDPOINTS -->
+  <h2>7. Core Modules &amp; REST API Endpoints</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Endpoint</th>
+        <th>Methods</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/api/auth/login</code></td>
+        <td>POST</td>
+        <td>Authenticates via email/username and returns JWT access &amp; refresh tokens</td>
+      </tr>
+      <tr>
+        <td><code>/api/categories</code></td>
+        <td>GET, POST, PATCH, DELETE</td>
+        <td>Manages global product classifications</td>
+      </tr>
+      <tr>
+        <td><code>/api/products</code></td>
+        <td>GET, POST, PATCH, DELETE</td>
+        <td>Manages SKUs, pricing, stock, batches, expiry, images, and logs stock changes</td>
+      </tr>
+      <tr>
+        <td><code>/api/orders</code></td>
+        <td>GET, POST, PATCH, DELETE</td>
+        <td>Manages customer orders, automatically deducting stock on creation</td>
+      </tr>
+      <tr>
+        <td><code>/api/audit-logs</code></td>
+        <td>GET</td>
+        <td>Read-only chronological movement ledger (Inbound, Outbound, Adjustment)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 8. TESTING & CONCLUSION -->
+  <h2>8. Testing, Verification &amp; Conclusion</h2>
+  <p>
+    The application is verified using Django's <code>APIClient</code> test suite (covering email/username JWT authentication, category/product CRUD, automatic stock deduction on order creation, and audit log generation), ESLint static analysis, and Vite production bundling.
+  </p>
+  <h3>Future Enhancements</h3>
+  <ul>
+    <li>Role-based access control (Admin, Warehouse Manager, Viewer) and multi-warehouse transfer workflows.</li>
+    <li>Automated email/SMS notifications for low-stock and near-expiry alerts.</li>
+    <li>Barcode/QR scanning and CSV/PDF invoice export.</li>
+  </ul>
+  <h3>Conclusion</h3>
+  <p>
+    InvenTrack demonstrates a clean, production-oriented integration of Django REST Framework and React.js, solving real-world inventory accuracy and auditability challenges with automated stock synchronization and rich visual analytics.
+  </p>
+
+</body>
+</html>

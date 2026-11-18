@@ -1,0 +1,12 @@
+flowchart TD
+    Start(["User Visits InvenTrack"]) --> Home["Public Landing Page (/)"]
+    Home --> Login["Login Page (/login)"]
+    Login --> Auth{"Valid JWT\nCredentials?"}
+    Auth -- "No" --> Err["Show Error Message"] --> Login
+    Auth -- "Yes" --> Admin["Protected Admin Console (/admin)"]
+
+    Admin --> Dash["Dashboard Analytics\n(Revenue, Profit, Anomalies, Forecast)"]
+    Admin --> Cat["Category Management\n(Create, Edit, Delete)"]
+    Admin --> Prod["Product Catalog\n(SKU, Margin, Batch, Expiry, Image)"]
+    Admin --> Ord["Order Management\n(Pending, Shipped, Delivered, Returned)"]
+    Admin --> Logs["Movement Ledger\n(Inbound, Outbound, Adjustment Trail)"]
